@@ -2,7 +2,6 @@
 
 package io.github.hiroa365.simplecounter.screen.main
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,14 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.hiroa365.simplecounter.foundation.ToggledButton
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
-import javax.inject.Inject
 
 
 /**
@@ -37,6 +30,7 @@ import javax.inject.Inject
 @Composable
 fun MainScreen(
     viewModel: MainScreenViewModel = hiltViewModel(),
+    navigateToCategory: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -54,6 +48,8 @@ fun MainScreen(
 //        onClickCountDown = { event -> viewModel.sendEvent(event) },
         onClickCountClear = { event -> viewModel.sendEvent(event) },
         onChangeMode = { mode -> viewModel.sendEvent(ChangeMode(mode)) },
+        onClickBack = { navigateToCategory() },
+        onClickAdd = { /*TODO*/ },
     )
 }
 
@@ -61,7 +57,7 @@ fun MainScreen(
  * stateless
  */
 @Composable
-fun MainScreen(
+private fun MainScreen(
     counterItems: List<CounterItem>,
     mode: CounterMode,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -69,10 +65,12 @@ fun MainScreen(
 //    onClickCountDown: (MainScreenEvent) -> Unit,
     onClickCountClear: (MainScreenEvent) -> Unit,
     onChangeMode: (CounterMode) -> Unit,
+    onClickBack: () -> Unit,
+    onClickAdd: () -> Unit,
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { MainScreenTopBar() },
+        topBar = { MainScreenTopBar(onClickBack = onClickBack, onClickAdd = onClickAdd) },
         bottomBar = { MainScreenBottomBar(mode = mode, onChangeMode = onChangeMode) },
         content = {
             MainScreenContent(
@@ -84,16 +82,19 @@ fun MainScreen(
 }
 
 @Composable
-fun MainScreenTopBar() {
+private fun MainScreenTopBar(
+    onClickBack: () -> Unit,
+    onClickAdd: () -> Unit,
+) {
     TopAppBar(
         title = {},
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onClickBack) {
                 Icon(Icons.Default.ArrowBack, "")
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onClickAdd) {
                 Icon(Icons.Default.Add, "")
             }
         },
@@ -103,7 +104,7 @@ fun MainScreenTopBar() {
 }
 
 @Composable
-fun MainScreenBottomBar(
+private fun MainScreenBottomBar(
     mode: CounterMode,
     onChangeMode: (CounterMode) -> Unit,
 ) {
@@ -132,7 +133,7 @@ fun MainScreenBottomBar(
 }
 
 @Composable
-fun MainScreenContent(
+private fun MainScreenContent(
     counterItems: List<CounterItem>,
     onClickCard: (UUID) -> Unit,
 ) {
@@ -152,7 +153,7 @@ fun MainScreenContent(
 }
 
 @Composable
-fun CardContent(
+private fun CardContent(
     item: CounterItem,
     onClickCard: (UUID) -> Unit,
 ) {
@@ -203,88 +204,6 @@ fun CardContent(
 }
 
 
-@HiltViewModel
-class MainScreenViewModel @Inject constructor() : ViewModel() {
-    private val TAG = javaClass.simpleName
-
-    private val _state: MutableStateFlow<MainScreenState> = MutableStateFlow(initValue)
-    val state: StateFlow<MainScreenState> = _state.asStateFlow()
-
-    fun sendEvent(event: MainScreenEvent) {
-        when (event) {
-            is CountUp -> {
-                Log.i(TAG, "count up uuid:$event")
-                val newCounterItems = _state.value.counterItems.map {
-                    if (it.id == event.uuid && it.counter < Int.MAX_VALUE) {
-                        it.copy(counter = it.counter + 1)
-                    } else it
-                }
-                _state.value = _state.value.copy(counterItems = newCounterItems)
-            }
-            is CountDown -> {
-                Log.i(TAG, "count down uuid:$event")
-                val newCounterItems = _state.value.counterItems.map {
-                    if (it.id == event.uuid && it.counter > 0) {
-                        it.copy(counter = it.counter - 1)
-                    } else it
-                }
-                _state.value = _state.value.copy(counterItems = newCounterItems)
-            }
-            is CountReset -> {
-                Log.i(TAG, "count reset uuid:$event")
-                val newCounterItems = _state.value.counterItems.map {
-                    if (it.id == event.uuid) it.copy(counter = 0)
-                    else it
-                }
-                _state.value = _state.value.copy(counterItems = newCounterItems)
-            }
-            is ChangeMode -> {
-                Log.i(TAG, "change mode:${event.mode}")
-                _state.value = _state.value.copy(mode = event.mode)
-            }
-        }
-    }
-}
-
-sealed class MainScreenEvent
-data class CountUp(val uuid: UUID) : MainScreenEvent()
-data class CountDown(val uuid: UUID) : MainScreenEvent()
-data class CountReset(val uuid: UUID) : MainScreenEvent()
-data class ChangeMode(val mode: CounterMode) : MainScreenEvent()
-
-
-
-val categoryId = UUID.randomUUID()
-val categoryId2 = UUID.randomUUID()
-
-private val initValue = MainScreenState(
-    counterItems = mutableListOf(
-        CounterItem(id = UUID.randomUUID(), categoryId = categoryId, counter = Int.MAX_VALUE, name = "項目A"),
-        CounterItem(id = UUID.randomUUID(), categoryId = categoryId, counter = 1, name = "項目B"),
-        CounterItem(id = UUID.randomUUID(), categoryId = categoryId2, counter = 2, name = "項目C"),
-        CounterItem(id = UUID.randomUUID(), categoryId = categoryId2, counter = Int.MAX_VALUE, name = "項目D"),
-    ),
-    mode = CounterMode.Up,
-)
-
-data class MainScreenState(
-    val counterItems: List<CounterItem>,
-    val mode: CounterMode
-)
-
-//カウンター
-data class CounterItem(
-    val id: UUID,
-    val categoryId: UUID,
-    val counter: Int,
-    val name: String,
-)
-
-sealed class CounterMode {
-    object Up : CounterMode()
-    object Down : CounterMode()
-    object Edit : CounterMode()
-}
 
 @Preview
 @Composable
@@ -296,6 +215,8 @@ fun Preview() {
         onClickCard = { },
 //        onClickCountDown = { },
         onClickCountClear = { },
-        onChangeMode = {}
+        onChangeMode = {},
+        onClickBack = { },
+        onClickAdd = { },
     )
 }

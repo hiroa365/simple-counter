@@ -9,56 +9,45 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import io.github.hiroa365.simplecounter.screen.main.MainScreenBottomBar
-import io.github.hiroa365.simplecounter.screen.main.MainScreenContent
-import io.github.hiroa365.simplecounter.screen.main.MainScreenTopBar
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
-import javax.inject.Inject
 
 @Composable
 fun CategoryScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
+    navigateToMain: () -> Unit,
+    navigateToAddCategory: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     CategoryScreen(
         categoryList = state.categoryList,
-        onClickAdd = {},
-        onClickCategory = {},
+        onClickAddCategory = { navigateToAddCategory() },
+        onClickCategory = { navigateToMain() },
         onClickEdit = {},
     )
 }
 
 @Composable
-fun CategoryScreen(
+private fun CategoryScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     categoryList: List<CategoryItem>,
-    onClickAdd: () -> Unit,
+    onClickAddCategory: () -> Unit,
     onClickCategory: (UUID) -> Unit,
     onClickEdit: (UUID) -> Unit,
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { CategoryScreenTopBar(onClickAdd) },
+        topBar = { CategoryScreenTopBar(onClickAddCategory) },
         bottomBar = { },
         content = {
             MainScreenContent(
@@ -71,7 +60,7 @@ fun CategoryScreen(
 }
 
 @Composable
-fun CategoryScreenTopBar(
+private fun CategoryScreenTopBar(
     onClickAdd: () -> Unit,
 ) {
     TopAppBar(
@@ -91,20 +80,24 @@ fun CategoryScreenTopBar(
 }
 
 @Composable
-fun MainScreenContent(
+private fun MainScreenContent(
     categoryList: List<CategoryItem>,
     onClickCategory: (UUID) -> Unit,
     onClickEdit: (UUID) -> Unit,
 ) {
     LazyColumn {
         items(items = categoryList) {
-            CategoryItem(item = it, onClickCategory = onClickCategory, onClickEdit = onClickEdit)
+            CategoryItem(
+                item = it,
+                onClickCategory = onClickCategory,
+                onClickEdit = onClickEdit,
+            )
         }
     }
 }
 
 @Composable
-fun CategoryItem(
+private fun CategoryItem(
     item: CategoryItem,
     onClickCategory: (UUID) -> Unit,
     onClickEdit: (UUID) -> Unit,
@@ -120,9 +113,9 @@ fun CategoryItem(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .weight(1f)
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top,
             ) {
@@ -134,6 +127,7 @@ fun CategoryItem(
             Row(
                 modifier = Modifier
                     .background(MaterialTheme.colors.primary)
+                    .padding(0.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
@@ -155,30 +149,8 @@ fun CategoryItem(
 fun Preview() {
     CategoryScreen(
         categoryList = initValue.categoryList,
-        onClickAdd = {},
+        onClickAddCategory = {},
         onClickCategory = {},
         onClickEdit = {},
     )
 }
-
-
-class CategoryViewModel @Inject constructor() : ViewModel() {
-    private val _state = MutableStateFlow(initValue)
-    val state = _state.asStateFlow()
-}
-
-private val initValue = CategoryScreenState(
-    categoryList = listOf(
-        CategoryItem(id = UUID.randomUUID(), name = "カテゴリ１"),
-        CategoryItem(id = UUID.randomUUID(), name = "カテゴリ２"),
-    )
-)
-
-data class CategoryScreenState(
-    val categoryList: List<CategoryItem>,
-)
-
-data class CategoryItem(
-    val id: UUID,
-    val name: String,
-)

@@ -37,9 +37,7 @@ import javax.inject.Inject
 @Composable
 fun MainScreen(
     viewModel: MainScreenViewModel = hiltViewModel(),
-//    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
-//    val state by remember { mutableStateOf(initValue) }
     val state by viewModel.state.collectAsState()
 
     MainScreen(
@@ -49,10 +47,11 @@ fun MainScreen(
             when (state.mode) {
                 CounterMode.Up -> viewModel.sendEvent(CountUp(uuid))
                 CounterMode.Down -> viewModel.sendEvent(CountDown(uuid))
-                CounterMode.Edit -> { /* TODO */ }
+                CounterMode.Edit -> { /* TODO */
+                }
             }
         },
-        onClickCountDown = { event -> viewModel.sendEvent(event) },
+//        onClickCountDown = { event -> viewModel.sendEvent(event) },
         onClickCountClear = { event -> viewModel.sendEvent(event) },
         onChangeMode = { mode -> viewModel.sendEvent(ChangeMode(mode)) },
     )
@@ -67,7 +66,7 @@ fun MainScreen(
     mode: CounterMode,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onClickCard: (UUID) -> Unit,
-    onClickCountDown: (MainScreenEvent) -> Unit,
+//    onClickCountDown: (MainScreenEvent) -> Unit,
     onClickCountClear: (MainScreenEvent) -> Unit,
     onChangeMode: (CounterMode) -> Unit,
 ) {
@@ -158,7 +157,7 @@ fun CardContent(
     onClickCard: (UUID) -> Unit,
 ) {
     Card(
-        onClick = { onClickCard(item.uuid) },
+        onClick = { onClickCard(item.id) },
         modifier = Modifier
             .size(120.dp)
 //            .fillMaxSize()
@@ -216,7 +215,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is CountUp -> {
                 Log.i(TAG, "count up uuid:$event")
                 val newCounterItems = _state.value.counterItems.map {
-                    if (it.uuid == event.uuid && it.counter < Int.MAX_VALUE) {
+                    if (it.id == event.uuid && it.counter < Int.MAX_VALUE) {
                         it.copy(counter = it.counter + 1)
                     } else it
                 }
@@ -225,7 +224,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is CountDown -> {
                 Log.i(TAG, "count down uuid:$event")
                 val newCounterItems = _state.value.counterItems.map {
-                    if (it.uuid == event.uuid && it.counter > 0) {
+                    if (it.id == event.uuid && it.counter > 0) {
                         it.copy(counter = it.counter - 1)
                     } else it
                 }
@@ -234,7 +233,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is CountReset -> {
                 Log.i(TAG, "count reset uuid:$event")
                 val newCounterItems = _state.value.counterItems.map {
-                    if (it.uuid == event.uuid) it.copy(counter = 0)
+                    if (it.id == event.uuid) it.copy(counter = 0)
                     else it
                 }
                 _state.value = _state.value.copy(counterItems = newCounterItems)
@@ -253,12 +252,17 @@ data class CountDown(val uuid: UUID) : MainScreenEvent()
 data class CountReset(val uuid: UUID) : MainScreenEvent()
 data class ChangeMode(val mode: CounterMode) : MainScreenEvent()
 
-val initValue = MainScreenState(
+
+
+val categoryId = UUID.randomUUID()
+val categoryId2 = UUID.randomUUID()
+
+private val initValue = MainScreenState(
     counterItems = mutableListOf(
-        CounterItem(uuid = UUID.randomUUID(), counter = Int.MAX_VALUE, name = "項目A"),
-        CounterItem(uuid = UUID.randomUUID(), counter = 1, name = "項目B"),
-        CounterItem(uuid = UUID.randomUUID(), counter = 2, name = "項目C"),
-        CounterItem(uuid = UUID.randomUUID(), counter = Int.MAX_VALUE, name = "項目D"),
+        CounterItem(id = UUID.randomUUID(), categoryId = categoryId, counter = Int.MAX_VALUE, name = "項目A"),
+        CounterItem(id = UUID.randomUUID(), categoryId = categoryId, counter = 1, name = "項目B"),
+        CounterItem(id = UUID.randomUUID(), categoryId = categoryId2, counter = 2, name = "項目C"),
+        CounterItem(id = UUID.randomUUID(), categoryId = categoryId2, counter = Int.MAX_VALUE, name = "項目D"),
     ),
     mode = CounterMode.Up,
 )
@@ -270,7 +274,8 @@ data class MainScreenState(
 
 //カウンター
 data class CounterItem(
-    val uuid: UUID,
+    val id: UUID,
+    val categoryId: UUID,
     val counter: Int,
     val name: String,
 )
@@ -284,16 +289,12 @@ sealed class CounterMode {
 @Preview
 @Composable
 fun Preview() {
+
     MainScreen(
-        counterItems = arrayListOf(
-            CounterItem(uuid = UUID.randomUUID(), counter = Int.MAX_VALUE, name = "項目A"),
-            CounterItem(uuid = UUID.randomUUID(), counter = 1, name = "項目B"),
-            CounterItem(uuid = UUID.randomUUID(), counter = 2, name = "項目C"),
-            CounterItem(uuid = UUID.randomUUID(), counter = Int.MAX_VALUE, name = "項目D"),
-        ),
-        mode = CounterMode.Up,
+        counterItems = initValue.counterItems.filter { it.categoryId == categoryId2 },
+        mode = initValue.mode,
         onClickCard = { },
-        onClickCountDown = { },
+//        onClickCountDown = { },
         onClickCountClear = { },
         onChangeMode = {}
     )

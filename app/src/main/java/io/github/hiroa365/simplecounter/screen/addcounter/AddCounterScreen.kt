@@ -1,4 +1,4 @@
-package io.github.hiroa365.simplecounter.screen.addcategory
+package io.github.hiroa365.simplecounter.screen.addcounter
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -6,7 +6,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,43 +19,50 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @Composable
-fun AddCategoryScreen(
-    viewModel: AddCategoryViewModel = hiltViewModel(),
-    navigateToCategory: () -> Unit
+fun AddCounterScreen(
+    viewModel: AddCounterViewModel = hiltViewModel(),
+    navigateToMain: () -> Unit,
 ) {
+
     val state by viewModel.state.collectAsState()
 
-    AddCategoryScreen(
-        categoryName = state.categoryName,
-        onCategoryNameChange = { viewModel.onCategoryNameChange(it) },
-        onClickAdd = { viewModel.addCategory() },
-        onClickCancel = { navigateToCategory() },
+    AddCounterScreen(
+        name = state.name,
+        onNameChange = { viewModel.nameChange(it) },
+        onClickAdd = { viewModel.addCounter() },
+        onClickBack = { navigateToMain() },
+        onClickCancel = { navigateToMain() },
     )
 }
 
 @Composable
-private fun AddCategoryScreen(
-    categoryName: String,
-    onCategoryNameChange: (String) -> Unit,
+private fun AddCounterScreen(
+    name: String,
+    onNameChange: (String) -> Unit,
     onClickAdd: () -> Unit,
-    onClickCancel: () -> Unit
+    onClickBack: () -> Unit,
+    onClickCancel: () -> Unit,
 ) {
     Scaffold(
-        topBar = { AddCategoryTopBar(onClickBack = onClickCancel) },
+        topBar = {
+            AddCounterTopBar(
+                onClickBack = onClickBack,
+            )
+        },
         content = {
-            AddCategoryContent(
-                categoryName = categoryName,
-                onCategoryNameChange = onCategoryNameChange,
+            AddCounterContent(
+                name = name,
+                onNameChange = onNameChange,
                 onClickAdd = onClickAdd,
                 onClickCancel = onClickCancel,
             )
-        }
+        },
     )
 }
 
 
 @Composable
-private fun AddCategoryTopBar(
+private fun AddCounterTopBar(
     onClickBack: () -> Unit,
 ) {
     TopAppBar(
@@ -63,8 +72,7 @@ private fun AddCategoryTopBar(
                 Icon(Icons.Default.ArrowBack, "")
             }
         },
-        actions = {
-        },
+        actions = { },
         elevation = 0.dp,
         backgroundColor = Color.White,
     )
@@ -72,17 +80,17 @@ private fun AddCategoryTopBar(
 
 
 @Composable
-private fun AddCategoryContent(
-    categoryName: String,
-    onCategoryNameChange: (String) -> Unit,
+private fun AddCounterContent(
+    name: String,
+    onNameChange: (String) -> Unit,
     onClickAdd: () -> Unit,
     onClickCancel: () -> Unit,
 ) {
     Column {
         TextField(
-            value = categoryName,
-            onValueChange = { onCategoryNameChange(it) },
-            label = { Text(text = "カテゴリ名") }
+            value = name,
+            onValueChange = { onNameChange(it) },
+            label = { Text(text = "カウンター名") }
         )
         Row {
             TextButton(onClick = onClickCancel) {
@@ -95,34 +103,33 @@ private fun AddCategoryContent(
     }
 }
 
-class AddCategoryViewModel @Inject constructor() : ViewModel() {
+
+class AddCounterViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow(initValue)
     val state = _state.asStateFlow()
 
-
-    fun onCategoryNameChange(value: String) {
-        _state.value = _state.value.copy(categoryName = value)
+    fun nameChange(value: String) {
+        _state.value = _state.value.copy(name = value)
     }
 
-    fun addCategory() {
-        //TODO dbにカテゴリ名を追加する
+    fun addCounter() {
+        //TODO
     }
 }
 
-data class AddCategoryState(
-    val categoryName: String,
+data class AddCounterState(
+    val name: String,
 )
 
-val initValue = AddCategoryState(
-    categoryName = "",
+val initValue = AddCounterState(
+    name = "",
 )
-
 
 @Preview
 @Composable
 fun Preview() {
-    AddCategoryScreen(
-        navigateToCategory = {},
+    AddCounterScreen(
+        navigateToMain = {},
     )
 }

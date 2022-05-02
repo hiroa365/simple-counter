@@ -31,6 +31,7 @@ import java.util.*
 fun MainScreen(
     viewModel: MainScreenViewModel = hiltViewModel(),
     navigateToCategory: () -> Unit,
+    navigateToAddCounter: ()->Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -49,7 +50,7 @@ fun MainScreen(
         onClickCountClear = { event -> viewModel.sendEvent(event) },
         onChangeMode = { mode -> viewModel.sendEvent(ChangeMode(mode)) },
         onClickBack = { navigateToCategory() },
-        onClickAdd = { /*TODO*/ },
+        onClickAdd = { navigateToAddCounter() },
     )
 }
 

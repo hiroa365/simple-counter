@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.hiroa365.simplecounter.screen.addcategory.AddCategoryScreen
+import io.github.hiroa365.simplecounter.screen.addcounter.AddCounterScreen
 import io.github.hiroa365.simplecounter.screen.category.CategoryScreen
 import io.github.hiroa365.simplecounter.screen.main.MainScreen
 
@@ -22,6 +23,7 @@ fun AppNavHost(
         composable(route = Screen.Main.route) {
             MainScreen(
                 navigateToCategory = { navController.navigate(Screen.Category.route) },
+                navigateToAddCounter = {navController.navigate(Screen.AddCounter.route)}
             )
         }
         composable(route = Screen.Category.route) {
@@ -33,6 +35,11 @@ fun AppNavHost(
         composable(route = Screen.AddCategory.route) {
             AddCategoryScreen(
                 navigateToCategory = { navController.navigate(Screen.Category.route) },
+            )
+        }
+        composable(route = Screen.AddCounter.route) {
+            AddCounterScreen(
+                navigateToMain = { navController.navigate(Screen.Main.route) },
             )
         }
     }

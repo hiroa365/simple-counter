@@ -1,4 +1,4 @@
-package io.github.hiroa365.simplecounter.screen.main
+package io.github.hiroa365.simplecounter.screen.counterlist
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,13 +10,13 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor() : ViewModel() {
+class CounterListViewModel @Inject constructor() : ViewModel() {
     private val TAG = javaClass.simpleName
 
-    private val _state: MutableStateFlow<MainScreenState> = MutableStateFlow(initValue)
-    val state: StateFlow<MainScreenState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<CounterListState> = MutableStateFlow(initValue)
+    val state: StateFlow<CounterListState> = _state.asStateFlow()
 
-    fun sendEvent(event: MainScreenEvent) {
+    fun sendEvent(event: CounterListEvent) {
         when (event) {
             is CountUp -> {
                 Log.i(TAG, "count up uuid:$event")

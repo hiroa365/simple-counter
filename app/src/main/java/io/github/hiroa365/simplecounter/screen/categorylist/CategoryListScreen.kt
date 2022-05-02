@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class)
 
-package io.github.hiroa365.simplecounter.screen.category
+package io.github.hiroa365.simplecounter.screen.categorylist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,23 +22,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.*
 
 @Composable
-fun CategoryScreen(
-    viewModel: CategoryViewModel = hiltViewModel(),
-    navigateToMain: () -> Unit,
+fun CategoryListScreen(
+    viewModel: CategoryListViewModel = hiltViewModel(),
+    navigateToCounterList: () -> Unit,
     navigateToAddCategory: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
-    CategoryScreen(
+    CategoryListScreen(
         categoryList = state.categoryList,
         onClickAddCategory = { navigateToAddCategory() },
-        onClickCategory = { navigateToMain() },
+        onClickCategory = { navigateToCounterList() },
         onClickEdit = {},
     )
 }
 
 @Composable
-private fun CategoryScreen(
+private fun CategoryListScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     categoryList: List<CategoryItem>,
     onClickAddCategory: () -> Unit,
@@ -47,10 +47,10 @@ private fun CategoryScreen(
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { CategoryScreenTopBar(onClickAddCategory) },
+        topBar = { CategoryListTopBar(onClickAddCategory) },
         bottomBar = { },
         content = {
-            MainScreenContent(
+            CategoryListContent(
                 categoryList = categoryList,
                 onClickCategory = onClickCategory,
                 onClickEdit = onClickEdit,
@@ -60,7 +60,7 @@ private fun CategoryScreen(
 }
 
 @Composable
-private fun CategoryScreenTopBar(
+private fun CategoryListTopBar(
     onClickAdd: () -> Unit,
 ) {
     TopAppBar(
@@ -80,7 +80,7 @@ private fun CategoryScreenTopBar(
 }
 
 @Composable
-private fun MainScreenContent(
+private fun CategoryListContent(
     categoryList: List<CategoryItem>,
     onClickCategory: (UUID) -> Unit,
     onClickEdit: (UUID) -> Unit,
@@ -147,7 +147,7 @@ private fun CategoryItem(
 @Preview
 @Composable
 fun Preview() {
-    CategoryScreen(
+    CategoryListScreen(
         categoryList = initValue.categoryList,
         onClickAddCategory = {},
         onClickCategory = {},

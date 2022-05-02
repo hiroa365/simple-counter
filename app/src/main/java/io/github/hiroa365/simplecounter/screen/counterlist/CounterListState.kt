@@ -1,9 +1,9 @@
-package io.github.hiroa365.simplecounter.screen.main
+package io.github.hiroa365.simplecounter.screen.counterlist
 
 import java.util.*
 
 
-data class MainScreenState(
+data class CounterListState(
     val counterItems: List<CounterItem>,
     val mode: CounterMode
 )
@@ -26,7 +26,7 @@ sealed class CounterMode {
 val categoryId = UUID.randomUUID()
 val categoryId2 = UUID.randomUUID()
 
-val initValue = MainScreenState(
+val initValue = CounterListState(
     counterItems = mutableListOf(
         CounterItem(
             id = UUID.randomUUID(),

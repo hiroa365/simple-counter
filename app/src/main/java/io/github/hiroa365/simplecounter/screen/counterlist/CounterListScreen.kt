@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 
-package io.github.hiroa365.simplecounter.screen.main
+package io.github.hiroa365.simplecounter.screen.counterlist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -28,14 +28,14 @@ import java.util.*
  * stateful
  */
 @Composable
-fun MainScreen(
-    viewModel: MainScreenViewModel = hiltViewModel(),
+fun CounterListScreen(
+    viewModel: CounterListViewModel = hiltViewModel(),
     navigateToCategory: () -> Unit,
     navigateToAddCounter: ()->Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
-    MainScreen(
+    CounterListScreen(
         counterItems = state.counterItems,
         mode = state.mode,
         onClickCard = { uuid ->
@@ -58,23 +58,22 @@ fun MainScreen(
  * stateless
  */
 @Composable
-private fun MainScreen(
+private fun CounterListScreen(
     counterItems: List<CounterItem>,
     mode: CounterMode,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onClickCard: (UUID) -> Unit,
-//    onClickCountDown: (MainScreenEvent) -> Unit,
-    onClickCountClear: (MainScreenEvent) -> Unit,
+    onClickCountClear: (CounterListEvent) -> Unit,
     onChangeMode: (CounterMode) -> Unit,
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { MainScreenTopBar(onClickBack = onClickBack, onClickAdd = onClickAdd) },
-        bottomBar = { MainScreenBottomBar(mode = mode, onChangeMode = onChangeMode) },
+        topBar = { CounterListTopBar(onClickBack = onClickBack, onClickAdd = onClickAdd) },
+        bottomBar = { CounterListBottomBar(mode = mode, onChangeMode = onChangeMode) },
         content = {
-            MainScreenContent(
+            CounterListContent(
                 counterItems = counterItems,
                 onClickCard = onClickCard
             )
@@ -83,7 +82,7 @@ private fun MainScreen(
 }
 
 @Composable
-private fun MainScreenTopBar(
+private fun CounterListTopBar(
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
 ) {
@@ -105,7 +104,7 @@ private fun MainScreenTopBar(
 }
 
 @Composable
-private fun MainScreenBottomBar(
+private fun CounterListBottomBar(
     mode: CounterMode,
     onChangeMode: (CounterMode) -> Unit,
 ) {
@@ -134,7 +133,7 @@ private fun MainScreenBottomBar(
 }
 
 @Composable
-private fun MainScreenContent(
+private fun CounterListContent(
     counterItems: List<CounterItem>,
     onClickCard: (UUID) -> Unit,
 ) {
@@ -210,7 +209,7 @@ private fun CardContent(
 @Composable
 fun Preview() {
 
-    MainScreen(
+    CounterListScreen(
         counterItems = initValue.counterItems.filter { it.categoryId == categoryId2 },
         mode = initValue.mode,
         onClickCard = { },

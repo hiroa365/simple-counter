@@ -1,11 +1,12 @@
 package io.github.hiroa365.simplecounter.screen.addcategory
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,16 +87,31 @@ private fun AddCategoryContent(
     onClickAdd: () -> Unit,
     onClickCancel: () -> Unit,
 ) {
-    Column {
-        TextField(
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    )  {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = categoryName,
             onValueChange = { onCategoryNameChange(it) },
             label = { Text(text = "カテゴリ名") }
         )
-        Row {
+
+        Spacer(modifier = Modifier.padding(16.dp))
+
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(onClick = onClickCancel) {
                 Text(text = "キャンセル")
             }
+
+            Spacer(modifier = Modifier.padding(16.dp))
+
             Button(onClick = onClickAdd) {
                 Text(text = "追加")
             }

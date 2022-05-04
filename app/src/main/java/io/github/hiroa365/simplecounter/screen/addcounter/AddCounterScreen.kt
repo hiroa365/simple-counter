@@ -15,9 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.hiroa365.simplecounter.data.repository.CounterItem
+import io.github.hiroa365.simplecounter.data.repository.CounterItemRepository
 import io.github.hiroa365.simplecounter.ui.theme.Purple200
+import io.github.hiroa365.simplecounter.ui.theme.Purple500
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.*
 import javax.inject.Inject
 
 @Composable
@@ -32,7 +36,10 @@ fun AddCounterScreen(
     AddCounterScreen(
         name = state.name,
         onNameChange = { viewModel.nameChange(it) },
-        onClickAdd = { viewModel.addCounter() },
+        onClickAdd = {
+            viewModel.addCounter(categoryId)
+            navigateToCounterList(categoryId)
+        },
         onClickBack = { navigateToCounterList(categoryId) },
         onClickCancel = { navigateToCounterList(categoryId) },
     )
@@ -122,7 +129,9 @@ private fun AddCounterContent(
 }
 
 @HiltViewModel
-class AddCounterViewModel @Inject constructor() : ViewModel() {
+class AddCounterViewModel @Inject constructor(
+    private val counterItemRepository: CounterItemRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(initValue)
     val state = _state.asStateFlow()
@@ -131,8 +140,15 @@ class AddCounterViewModel @Inject constructor() : ViewModel() {
         _state.value = _state.value.copy(name = value)
     }
 
-    fun addCounter() {
-        //TODO
+    fun addCounter(categoryId: Long) {
+        val item = CounterItem(
+            categoryId = categoryId,
+            counterId = UUID.randomUUID().mostSignificantBits,
+            counter = 0,
+            name = _state.value.name,
+            color = _state.value.color,
+        )
+        counterItemRepository.add(item)
     }
 }
 
@@ -143,7 +159,7 @@ data class AddCounterState(
 
 val initValue = AddCounterState(
     name = "",
-    color = Purple200,
+    color = Purple500,
 )
 
 @Preview

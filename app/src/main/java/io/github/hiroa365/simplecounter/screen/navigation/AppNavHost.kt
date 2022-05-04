@@ -64,7 +64,7 @@ fun AppNavHost(
             val categoryId = arguments.getLong("categoryId")
             AddCounterScreen(
                 categoryId = categoryId,
-                navigateToCounterList = { navController.navigate("${Destinations.AddCounter}/$it") },
+                navigateToCounterList = { navController.navigate("${Destinations.CounterList}/$it") },
             )
         }
     }

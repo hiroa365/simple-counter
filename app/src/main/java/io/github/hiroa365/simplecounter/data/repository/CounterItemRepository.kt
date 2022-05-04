@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.hiroa365.simplecounter.ui.theme.Purple200
+import io.github.hiroa365.simplecounter.ui.theme.Purple500
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,28 +27,28 @@ class CounterItemRepositoryMock @Inject constructor() : CounterItemRepository {
             categoryId = CategoryItemRepositoryMock.categoryId_1,
             counter = Int.MAX_VALUE,
             name = "項目A",
-            color = Purple200,
+            color = Purple500,
         ),
         CounterItem(
             counterId = UUID.randomUUID().mostSignificantBits,
             categoryId = CategoryItemRepositoryMock.categoryId_1,
             counter = 1,
             name = "項目B",
-            color = Purple200,
+            color = Purple500,
         ),
         CounterItem(
             counterId = UUID.randomUUID().mostSignificantBits,
             categoryId = CategoryItemRepositoryMock.categoryId_2,
             counter = 2,
             name = "項目C",
-            color = Purple200,
+            color = Purple500,
         ),
         CounterItem(
             counterId = UUID.randomUUID().mostSignificantBits,
             categoryId = CategoryItemRepositoryMock.categoryId_2,
             counter = Int.MAX_VALUE,
             name = "項目D",
-            color = Purple200,
+            color = Purple500,
         ),
     )
 

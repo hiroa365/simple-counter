@@ -128,7 +128,7 @@ private fun CategoryItem(
             }
             Row(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.primary)
+                    .background(item.color)
                     .padding(0.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,

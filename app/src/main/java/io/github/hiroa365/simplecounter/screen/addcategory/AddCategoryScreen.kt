@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.hiroa365.simplecounter.data.repository.CategoryItem
 import io.github.hiroa365.simplecounter.data.repository.CategoryItemRepository
+import io.github.hiroa365.simplecounter.ui.theme.Purple200
+import io.github.hiroa365.simplecounter.ui.theme.Purple500
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
@@ -120,17 +122,26 @@ class AddCategoryViewModel @Inject constructor(
         val item = CategoryItem(
             categoryId = UUID.randomUUID().mostSignificantBits,
             name = _state.value.categoryName,
+            color = _state.value.color,
         )
         categoryItemRepository.add(item)
     }
 }
 
 data class AddCategoryState(
+    /**
+     * カテゴリ名
+     */
     val categoryName: String,
+    /**
+     * 色
+     */
+    val color: Color = Purple500, /* TODO */
 )
 
 val initValue = AddCategoryState(
     categoryName = "",
+    color = Purple500,
 )
 
 

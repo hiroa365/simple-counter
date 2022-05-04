@@ -1,10 +1,13 @@
 package io.github.hiroa365.simplecounter.data.repository
 
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.hiroa365.simplecounter.ui.theme.Purple200
+import io.github.hiroa365.simplecounter.ui.theme.Purple500
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,8 +28,8 @@ class CategoryItemRepositoryMock @Inject constructor() : CategoryItemRepository 
     }
 
     private val categoryItems = arrayListOf(
-        CategoryItem(categoryId = categoryId_1, name = "カテゴリ１"),
-        CategoryItem(categoryId = categoryId_2, name = "カテゴリ２"),
+        CategoryItem(categoryId = categoryId_1, name = "カテゴリ１", color = Purple500),
+        CategoryItem(categoryId = categoryId_2, name = "カテゴリ２", color = Purple500),
     )
 
     override fun getAll(): List<CategoryItem> = categoryItems
@@ -39,8 +42,18 @@ class CategoryItemRepositoryMock @Inject constructor() : CategoryItemRepository 
 }
 
 data class CategoryItem(
+    /**
+     * カテゴリーID
+     */
     val categoryId: Long,
+    /**
+     * カテゴリ名
+     */
     val name: String,
+    /**
+     * 色
+     */
+    val color: Color
 )
 
 @Module

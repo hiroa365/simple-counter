@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.hiroa365.simplecounter.data.repository.CounterItem
 import io.github.hiroa365.simplecounter.foundation.ToggledButton
 import java.util.*
 
@@ -30,13 +31,14 @@ import java.util.*
 @Composable
 fun CounterListScreen(
     viewModel: CounterListViewModel = hiltViewModel(),
+    categoryId: Long,
     navigateToCategory: () -> Unit,
     navigateToAddCounter: ()->Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     CounterListScreen(
-        counterItems = state.counterItems,
+        counterItems = state.counterItems.filter { it.categoryId == categoryId },
         mode = state.mode,
         onClickCard = { uuid ->
             when (state.mode) {
@@ -62,7 +64,7 @@ private fun CounterListScreen(
     counterItems: List<CounterItem>,
     mode: CounterMode,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    onClickCard: (UUID) -> Unit,
+    onClickCard: (Long) -> Unit,
     onClickCountClear: (CounterListEvent) -> Unit,
     onChangeMode: (CounterMode) -> Unit,
     onClickBack: () -> Unit,
@@ -135,7 +137,7 @@ private fun CounterListBottomBar(
 @Composable
 private fun CounterListContent(
     counterItems: List<CounterItem>,
-    onClickCard: (UUID) -> Unit,
+    onClickCard: (Long) -> Unit,
 ) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(3),
@@ -155,10 +157,10 @@ private fun CounterListContent(
 @Composable
 private fun CardContent(
     item: CounterItem,
-    onClickCard: (UUID) -> Unit,
+    onClickCard: (Long) -> Unit,
 ) {
     Card(
-        onClick = { onClickCard(item.id) },
+        onClick = { onClickCard(item.counterId) },
         modifier = Modifier
             .size(120.dp)
 //            .fillMaxSize()
@@ -185,7 +187,7 @@ private fun CardContent(
             }
             Column(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.primarySurface)
+                    .background(item.color)
                     .padding(8.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -209,14 +211,14 @@ private fun CardContent(
 @Composable
 fun Preview() {
 
-    CounterListScreen(
-        counterItems = initValue.counterItems.filter { it.categoryId == categoryId2 },
-        mode = initValue.mode,
-        onClickCard = { },
-//        onClickCountDown = { },
-        onClickCountClear = { },
-        onChangeMode = {},
-        onClickBack = { },
-        onClickAdd = { },
-    )
+//    CounterListScreen(
+//        counterItems = initValue.counterItems.filter { it.categoryId == categoryId2 },
+//        mode = initValue.mode,
+//        onClickCard = { },
+////        onClickCountDown = { },
+//        onClickCountClear = { },
+//        onChangeMode = {},
+//        onClickBack = { },
+//        onClickAdd = { },
+//    )
 }

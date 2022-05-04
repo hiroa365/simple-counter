@@ -2,44 +2,69 @@ package io.github.hiroa365.simplecounter.screen.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import io.github.hiroa365.simplecounter.screen.addcategory.AddCategoryScreen
 import io.github.hiroa365.simplecounter.screen.addcounter.AddCounterScreen
 import io.github.hiroa365.simplecounter.screen.categorylist.CategoryListScreen
 import io.github.hiroa365.simplecounter.screen.counterlist.CounterListScreen
 
 
+object Destinations {
+    const val CounterList = "counter-list"
+    const val CategoryList = "category-list"
+    const val AddCategory = "add-category"
+    const val AddCounter = "add-counter"
+}
+
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Main.route,
+    startDestination: String = Destinations.CategoryList,
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(route = Screen.Main.route) {
-            CounterListScreen(
-                navigateToCategory = { navController.navigate(Screen.Category.route) },
-                navigateToAddCounter = {navController.navigate(Screen.AddCounter.route)}
-            )
-        }
-        composable(route = Screen.Category.route) {
+
+        composable(route = Destinations.CategoryList) {
             CategoryListScreen(
-                navigateToCounterList = { navController.navigate(Screen.Main.route) },
-                navigateToAddCategory = { navController.navigate(Screen.AddCategory.route) },
+                navigateToCounterList = { navController.navigate("${Destinations.CounterList}/$it") },
+                navigateToAddCategory = { navController.navigate(Destinations.AddCategory) },
             )
         }
-        composable(route = Screen.AddCategory.route) {
+
+        composable(route = Destinations.AddCategory) {
             AddCategoryScreen(
-                navigateToCategory = { navController.navigate(Screen.Category.route) },
+                navigateToCategory = { navController.navigate(Destinations.CategoryList) },
             )
         }
-        composable(route = Screen.AddCounter.route) {
+
+        composable(
+            route = "${Destinations.CounterList}/{categoryId}",
+            arguments = listOf(navArgument("categoryId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
+            val categoryId = arguments.getLong("categoryId")
+            CounterListScreen(
+                categoryId = categoryId,
+                navigateToCategory = { navController.navigate(Destinations.CategoryList) },
+                navigateToAddCounter = { navController.navigate("${Destinations.AddCounter}/$categoryId") }
+            )
+        }
+
+        composable(
+            route = "${Destinations.AddCounter}/{categoryId}",
+            arguments = listOf(navArgument("categoryId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
+            val categoryId = arguments.getLong("categoryId")
             AddCounterScreen(
-                navigateToMain = { navController.navigate(Screen.Main.route) },
+                categoryId = categoryId,
+                navigateToCounterList = { navController.navigate("${Destinations.AddCounter}/$it") },
             )
         }
     }

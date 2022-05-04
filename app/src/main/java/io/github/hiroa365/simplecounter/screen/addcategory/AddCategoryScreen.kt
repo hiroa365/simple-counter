@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -12,8 +11,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.hiroa365.simplecounter.data.repository.CategoryItem
+import io.github.hiroa365.simplecounter.data.repository.CategoryItemRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.*
 import javax.inject.Inject
 
 @Composable
@@ -26,7 +29,10 @@ fun AddCategoryScreen(
     AddCategoryScreen(
         categoryName = state.categoryName,
         onCategoryNameChange = { viewModel.onCategoryNameChange(it) },
-        onClickAdd = { viewModel.addCategory() },
+        onClickAdd = {
+            viewModel.addCategory()
+            navigateToCategory()
+        },
         onClickCancel = { navigateToCategory() },
     )
 }
@@ -95,7 +101,10 @@ private fun AddCategoryContent(
     }
 }
 
-class AddCategoryViewModel @Inject constructor() : ViewModel() {
+@HiltViewModel
+class AddCategoryViewModel @Inject constructor(
+    private val categoryItemRepository: CategoryItemRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(initValue)
     val state = _state.asStateFlow()
@@ -106,7 +115,13 @@ class AddCategoryViewModel @Inject constructor() : ViewModel() {
     }
 
     fun addCategory() {
-        //TODO dbにカテゴリ名を追加する
+        if (_state.value.categoryName.isEmpty()) return
+
+        val item = CategoryItem(
+            categoryId = UUID.randomUUID().mostSignificantBits,
+            name = _state.value.categoryName,
+        )
+        categoryItemRepository.add(item)
     }
 }
 

@@ -1,27 +1,30 @@
 package io.github.hiroa365.simplecounter.screen.addcounter
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.hiroa365.simplecounter.ui.theme.Purple200
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @Composable
 fun AddCounterScreen(
+    categoryId: Long,
     viewModel: AddCounterViewModel = hiltViewModel(),
-    navigateToMain: () -> Unit,
+    navigateToCounterList: (Long) -> Unit,
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -30,8 +33,8 @@ fun AddCounterScreen(
         name = state.name,
         onNameChange = { viewModel.nameChange(it) },
         onClickAdd = { viewModel.addCounter() },
-        onClickBack = { navigateToMain() },
-        onClickCancel = { navigateToMain() },
+        onClickBack = { navigateToCounterList(categoryId) },
+        onClickCancel = { navigateToCounterList(categoryId) },
     )
 }
 
@@ -86,24 +89,39 @@ private fun AddCounterContent(
     onClickAdd: () -> Unit,
     onClickCancel: () -> Unit,
 ) {
-    Column {
-        TextField(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = name,
             onValueChange = { onNameChange(it) },
             label = { Text(text = "カウンター名") }
         )
-        Row {
+
+        Spacer(modifier = Modifier.padding(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(onClick = onClickCancel) {
                 Text(text = "キャンセル")
             }
+
+            Spacer(modifier = Modifier.padding(16.dp))
+
             Button(onClick = onClickAdd) {
-                Text(text = "追加")
+                Text(text = "追加する")
             }
         }
     }
 }
 
-
+@HiltViewModel
 class AddCounterViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow(initValue)
@@ -120,16 +138,19 @@ class AddCounterViewModel @Inject constructor() : ViewModel() {
 
 data class AddCounterState(
     val name: String,
+    val color: Color,
 )
 
 val initValue = AddCounterState(
     name = "",
+    color = Purple200,
 )
 
 @Preview
 @Composable
 fun Preview() {
     AddCounterScreen(
-        navigateToMain = {},
+        categoryId = 1L,
+        navigateToCounterList = {},
     )
 }

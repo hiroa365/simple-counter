@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.hiroa365.simplecounter.data.repository.CategoryItem
+import io.github.hiroa365.simplecounter.data.repository.CategoryItemRepositoryMock
 import java.util.*
 
 @Composable
 fun CategoryListScreen(
     viewModel: CategoryListViewModel = hiltViewModel(),
-    navigateToCounterList: () -> Unit,
+    navigateToCounterList: (Long) -> Unit,
     navigateToAddCategory: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
@@ -32,7 +34,7 @@ fun CategoryListScreen(
     CategoryListScreen(
         categoryList = state.categoryList,
         onClickAddCategory = { navigateToAddCategory() },
-        onClickCategory = { navigateToCounterList() },
+        onClickCategory = { navigateToCounterList(it) },
         onClickEdit = {},
     )
 }
@@ -42,8 +44,8 @@ private fun CategoryListScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     categoryList: List<CategoryItem>,
     onClickAddCategory: () -> Unit,
-    onClickCategory: (UUID) -> Unit,
-    onClickEdit: (UUID) -> Unit,
+    onClickCategory: (Long) -> Unit,
+    onClickEdit: (Long) -> Unit,
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
@@ -82,8 +84,8 @@ private fun CategoryListTopBar(
 @Composable
 private fun CategoryListContent(
     categoryList: List<CategoryItem>,
-    onClickCategory: (UUID) -> Unit,
-    onClickEdit: (UUID) -> Unit,
+    onClickCategory: (Long) -> Unit,
+    onClickEdit: (Long) -> Unit,
 ) {
     LazyColumn {
         items(items = categoryList) {
@@ -99,11 +101,11 @@ private fun CategoryListContent(
 @Composable
 private fun CategoryItem(
     item: CategoryItem,
-    onClickCategory: (UUID) -> Unit,
-    onClickEdit: (UUID) -> Unit,
+    onClickCategory: (Long) -> Unit,
+    onClickEdit: (Long) -> Unit,
 ) {
     Card(
-        onClick = { onClickCategory(item.id) },
+        onClick = { onClickCategory(item.categoryId) },
         modifier = Modifier
             .height(120.dp)
             .fillMaxWidth()
@@ -132,7 +134,7 @@ private fun CategoryItem(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = { onClickEdit(item.id) }) {
+                IconButton(onClick = { onClickEdit(item.categoryId) }) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "",
@@ -148,7 +150,7 @@ private fun CategoryItem(
 @Composable
 fun Preview() {
     CategoryListScreen(
-        categoryList = initValue.categoryList,
+        categoryList = CategoryItemRepositoryMock().getAll(),
         onClickAddCategory = {},
         onClickCategory = {},
         onClickEdit = {},

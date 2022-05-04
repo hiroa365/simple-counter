@@ -4,7 +4,7 @@ import java.util.*
 
 
 sealed class CounterListEvent
-data class CountUp(val uuid: UUID) : CounterListEvent()
-data class CountDown(val uuid: UUID) : CounterListEvent()
-data class CountReset(val uuid: UUID) : CounterListEvent()
-data class ChangeMode(val mode: CounterMode) : CounterListEvent()
+data class CountUp(val id: Long) : CounterListEvent()
+data class CountDown(val id: Long) : CounterListEvent()
+data class CountReset(val id: Long) : CounterListEvent()
+data class ChangeMode(val id: CounterMode) : CounterListEvent()
